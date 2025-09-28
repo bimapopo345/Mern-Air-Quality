@@ -1,0 +1,247 @@
+# Ultimate Full-Stack MERN IoT Air Quality Dashboard
+# Root .gitignore - covers backend and frontend
+
+# ===========================
+# Dependencies & Node Modules
+# ===========================
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# ===========================
+# Environment Variables (SENSITIVE!)
+# ===========================
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+backend/.env
+frontend/.env.local
+frontend/.env.development
+frontend/.env.test
+frontend/.env.production
+
+# ===========================
+# Logs
+# ===========================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+backend/logs/
+frontend/logs/
+
+# ===========================
+# Runtime Data
+# ===========================
+pids/
+*.pid
+*.seed
+*.pid.lock
+.npm/
+.eslintcache
+
+# ===========================
+# Coverage & Testing
+# ===========================
+coverage/
+*.lcov
+.nyc_output/
+lib-cov/
+coverage-final.json
+test-results/
+junit.xml
+
+# ===========================
+# Build Outputs
+# ===========================
+build/
+dist/
+frontend/build/
+backend/dist/
+*.tgz
+*.tar.gz
+
+# ===========================
+# Database Files
+# ===========================
+*.db
+*.sqlite
+*.sqlite3
+data/
+mongodb-data/
+dump/
+
+# ===========================
+# Temporary Files
+# ===========================
+tmp/
+temp/
+.tmp/
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# ===========================
+# IDE & Editor Files
+# ===========================
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+
+# ===========================
+# Frontend Specific
+# ===========================
+frontend/.next/
+frontend/out/
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.pnpm-debug.log*
+
+# ===========================
+# Backend Specific
+# ===========================
+backend/uploads/
+backend/public/uploads/
+backend/*.log
+
+# ===========================
+# Package Manager Files
+# ===========================
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+.pnpm-store/
+
+# ===========================
+# Cache Directories
+# ===========================
+.cache/
+.parcel-cache/
+.next/
+.nuxt/
+.vuepress/dist/
+.serverless/
+.fusebox/
+.dynamodb/
+
+# ===========================
+# Optional Files
+# ===========================
+.npmrc
+.yarnrc
+.eslintrc.js
+.prettierrc
+
+# ===========================
+# Production Files
+# ===========================
+*.env.production
+config/production.json
+
+# ===========================
+# Security & Keys (IMPORTANT!)
+# ===========================
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+*.pfx
+keys/
+secrets/
+certificates/
+
+# ===========================
+# Backup Files
+# ===========================
+*.backup
+*.bak
+*.old
+backup/
+
+# ===========================
+# Documentation Build
+# ===========================
+docs/build/
+docs/.vuepress/dist/
+
+# ===========================
+# Deployment
+# ===========================
+.vercel/
+.netlify/
+.firebase/
+.amplify/
+
+# ===========================
+# Local Development
+# ===========================
+.local/
+local/
+*.local
+
+# ===========================
+# System Files
+# ===========================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ===========================
+# Custom Temp Files (for development)
+# ===========================
+tmp_rovodev_*
+temp_*
+test_*
+debug_*
+
+# ===========================
+# Large Media Files (optional)
+# ===========================
+*.mp4
+*.mov
+*.avi
+*.wmv
+*.flv
+*.webm
+*.mkv
+
+# ===========================
+# Archive Files
+# ===========================
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+*.bz2
+
+# ===========================
+# Keep These Files (Exceptions)
+# ===========================
+!.gitkeep
+!.gitignore
+!README.md
+!package.json
+!postman/*.json

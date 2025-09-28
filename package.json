@@ -1,0 +1,22 @@
+{
+  "name": "iot-air-quality-dashboard-root",
+  "version": "1.0.0",
+  "description": "Root package for Ultimate Full-Stack MERN IoT Air Quality Dashboard",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd backend && npm run dev",
+    "client": "cd frontend && npm start",
+    "build": "cd frontend && npm run build",
+    "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "seed": "cd backend && npm run seed",
+    "start": "cd backend && npm start"
+  },
+  "keywords": ["iot", "air-quality", "dashboard", "mern", "react", "express", "mongodb"],
+  "author": "Corporate Development Team",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "nodemon": "^3.0.1"
+  }
+}

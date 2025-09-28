@@ -1,0 +1,431 @@
+{
+  "info": {
+    "name": "IoT Air Quality Dashboard V3 - Complete",
+    "description": "Complete API collection for the Ultimate Full-Stack MERN IoT Air Quality Dashboard with dual authentication (JWT for web users, API Key for IoT devices)",
+    "version": "3.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 Authentication",
+      "item": [
+        {
+          "name": "Login Admin User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('jwt_token', response.token);",
+                  "    pm.environment.set('user_id', response.user.id);",
+                  "    pm.environment.set('user_role', response.user.role);",
+                  "    console.log('✅ Admin login successful, token saved');",
+                  "} else {",
+                  "    console.log('❌ Login failed');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@company.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login Regular User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('jwt_token', response.token);",
+                  "    pm.environment.set('user_id', response.user.id);",
+                  "    pm.environment.set('user_role', response.user.role);",
+                  "    console.log('✅ User login successful, token saved');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@company.com\",\n  \"password\": \"user123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Validate Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/validate-token",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "validate-token"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📊 IoT Device Data Endpoints",
+      "item": [
+        {
+          "name": "Submit Air Quality Data",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    console.log('✅ Air quality data submitted successfully');",
+                  "    const response = pm.response.json();",
+                  "    console.log('AQI:', response.data.aqi);",
+                  "    console.log('Category:', response.data.airQualityCategory);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-API-Key",
+                "value": "{{device_api_key}}",
+                "description": "Device API Key for IoT authentication"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceId\": \"AIR-SENSOR-001\",\n  \"pm25\": 15.2,\n  \"pm10\": 22.8,\n  \"temperature\": 23.5,\n  \"humidity\": 65.2,\n  \"co2\": 450,\n  \"voc\": 0.8,\n  \"aqi\": 58,\n  \"location\": {\n    \"name\": \"Office Floor 1\",\n    \"coordinates\": {\n      \"latitude\": 40.7128,\n      \"longitude\": -74.0060\n    }\n  },\n  \"batteryLevel\": 92,\n  \"signalStrength\": -45\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/data",
+              "host": ["{{base_url}}"],
+              "path": ["api", "data"]
+            }
+          }
+        },
+        {
+          "name": "Submit Good AQI Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-API-Key",
+                "value": "{{device_api_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceId\": \"AIR-SENSOR-002\",\n  \"pm25\": 8.5,\n  \"pm10\": 14.2,\n  \"temperature\": 22.1,\n  \"humidity\": 58.3,\n  \"co2\": 380,\n  \"voc\": 0.3,\n  \"aqi\": 35\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/data",
+              "host": ["{{base_url}}"],
+              "path": ["api", "data"]
+            }
+          }
+        },
+        {
+          "name": "Submit Poor AQI Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-API-Key",
+                "value": "{{device_api_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceId\": \"AIR-SENSOR-003\",\n  \"pm25\": 45.8,\n  \"pm10\": 67.2,\n  \"temperature\": 26.8,\n  \"humidity\": 72.1,\n  \"co2\": 680,\n  \"voc\": 2.1,\n  \"aqi\": 162\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/data",
+              "host": ["{{base_url}}"],
+              "path": ["api", "data"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👤 User Profile & API Key Management",
+      "item": [
+        {
+          "name": "Get User Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "me"]
+            }
+          }
+        },
+        {
+          "name": "Reveal API Key and Save",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('device_api_key', response.apiKey);",
+                  "    console.log('✅ Device API Key saved to environment');",
+                  "    console.log('API Key:', response.apiKey.substring(0, 20) + '...');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/me/api-key/reveal",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "me", "api-key", "reveal"]
+            }
+          }
+        },
+        {
+          "name": "Get Air Quality Data",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/data?limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "data"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Latest Data",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/data/latest",
+              "host": ["{{base_url}}"],
+              "path": ["api", "data", "latest"]
+            }
+          }
+        },
+        {
+          "name": "Get Chart Data",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/data/charts?hours=24",
+              "host": ["{{base_url}}"],
+              "path": ["api", "data", "charts"],
+              "query": [
+                {
+                  "key": "hours",
+                  "value": "24"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔧 Admin Endpoints",
+      "item": [
+        {
+          "name": "Get Admin Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/dashboard",
+              "host": ["{{base_url}}"],
+              "path": ["api", "admin", "dashboard"]
+            }
+          }
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/users",
+              "host": ["{{base_url}}"],
+              "path": ["api", "admin", "users"]
+            }
+          }
+        },
+        {
+          "name": "Get API Logs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/logs?limit=50",
+              "host": ["{{base_url}}"],
+              "path": ["api", "admin", "logs"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔍 System Status",
+      "item": [
+        {
+          "name": "API Status",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "status"]
+            }
+          }
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/health",
+              "host": ["{{base_url}}"],
+              "path": ["api", "health"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
