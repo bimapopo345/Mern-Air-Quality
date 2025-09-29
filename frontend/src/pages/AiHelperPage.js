@@ -70,18 +70,18 @@ const AiHelperPage = () => {
         headers: {
           "Authorization": `Bearer ${process.env.REACT_APP_OPENROUTER_API_KEY}`,
           "Content-Type": "application/json",
-          "HTTP-Referer": "http://localhost:3000",
-          "X-Title": "IoT Air Quality Dashboard"
+          "HTTP-Referer": "http://localhost:3000", // Optional. Site URL for rankings on openrouter.ai.
+          "X-Title": "IoT Air Quality Dashboard" // Optional. Site title for rankings on openrouter.ai.
         },
         body: JSON.stringify({
-          "model": "google/gemini-2.0-flash-exp:free",
+          "model": "x-ai/grok-4-fast:free",
           "messages": [
-            { 
-              "role": "system", 
-              "content": "You are a helpful AI assistant for an IoT Air Quality Dashboard. You specialize in environmental monitoring, air quality analysis, and IoT sensor data interpretation. Provide clear, informative, and actionable advice about air quality, environmental health, and sensor readings. Be friendly, professional, and focus on helping users understand and improve their indoor air quality. When discussing specific values, explain what they mean in practical terms and suggest appropriate actions." 
+            {
+              "role": "system",
+              "content": "You are a helpful AI assistant for an IoT Air Quality Dashboard. You specialize in environmental monitoring, air quality analysis, and IoT sensor data interpretation. Provide clear, informative, and actionable advice about air quality, environmental health, and sensor readings. Be friendly, professional, and focus on helping users understand and improve their indoor air quality. When discussing specific values, explain what they mean in practical terms and suggest appropriate actions."
             },
-            { 
-              "role": "user", 
+            {
+              "role": "user",
               "content": content
             }
           ],
