@@ -32,19 +32,35 @@ const DashboardPage = () => {
   // Fetch dashboard data
   const fetchDashboardData = async () => {
     try {
-      const [latestRes, chartRes, devicesRes, alertsRes] = await Promise.all([
+      const [latestResult, chartResult, devicesResult, alertsResult] = await Promise.allSettled([
         axios.get('/api/data/latest'),
         axios.get('/api/data/charts?hours=24&type=hourly'),
         axios.get('/api/users/me/devices'),
         axios.get('/api/data/alerts?threshold=100&hours=24')
       ]);
 
+      if (chartResult.status !== 'fulfilled') throw chartResult.reason;
+      if (devicesResult.status !== 'fulfilled') throw devicesResult.reason;
+      if (alertsResult.status !== 'fulfilled') throw alertsResult.reason;
+
+      let latestData = null;
+      let statistics = null;
+
+      if (latestResult.status === 'fulfilled') {
+        latestData = latestResult.value.data.data;
+        statistics = latestResult.value.data.statistics || null;
+      } else if (latestResult.reason?.response?.status !== 404) {
+        throw latestResult.reason;
+      } else {
+        console.warn('No latest air quality data available yet.');
+      }
+
       setDashboardData({
-        latest: latestRes.data.data,
-        statistics: latestRes.data.statistics || null,
-        chartData: chartRes.data.data || [],
-        devices: devicesRes.data.devices || [],
-        alerts: alertsRes.data.alerts || []
+        latest: latestData,
+        statistics,
+        chartData: chartResult.value.data.data || [],
+        devices: devicesResult.value.data.devices || [],
+        alerts: alertsResult.value.data.alerts || []
       });
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
