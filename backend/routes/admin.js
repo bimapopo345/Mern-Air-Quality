@@ -401,4 +401,29 @@ router.get('/logs/stats', async (req, res) => {
   }
 });
 
+/**
+ * @route   DELETE /api/admin/data/all
+ * @desc    Delete all air quality data (for testing/reset purposes)
+ * @access  Private (Admin)
+ */
+router.delete('/data/all', async (req, res) => {
+  try {
+    // This is a powerful operation, ensure it's only for admin/testing
+    const result = await AirQualityData.deleteMany({});
+    console.log(`Deleted ${result.deletedCount} air quality data entries.`);
+    
+    res.json({
+      message: `Successfully deleted ${result.deletedCount} air quality data entries.`,
+      count: result.deletedCount
+    });
+
+  } catch (error) {
+    console.error('Delete all data error:', error);
+    res.status(500).json({
+      message: 'Failed to delete data',
+      error: 'DATA_DELETION_ERROR'
+    });
+  }
+});
+
 module.exports = router;

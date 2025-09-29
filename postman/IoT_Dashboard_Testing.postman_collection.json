@@ -1,0 +1,325 @@
+{
+  "info": {
+    "name": "IoT Air Quality Dashboard - Testing & Cleanup",
+    "description": "Modified collection for testing and cleaning up data. Includes a new endpoint to delete all air quality data.",
+    "version": "3.0.1",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 Authentication",
+      "item": [
+        {
+          "name": "Login Admin User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('jwt_token', response.token);",
+                  "    pm.environment.set('user_id', response.user.id);",
+                  "    pm.environment.set('user_role', response.user.role);",
+                  "    console.log('✅ Admin login successful, token saved');",
+                  "} else {",
+                  "    console.log('❌ Login failed');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@company.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login Regular User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('jwt_token', response.token);",
+                  "    pm.environment.set('user_id', response.user.id);",
+                  "    pm.environment.set('user_role', response.user.role);",
+                  "    console.log('✅ User login successful, token saved');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@company.com\",\n  \"password\": \"user123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🧹 Data Management (Testing)",
+      "item": [
+        {
+          "name": "Delete All Air Quality Data",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    console.log(`✅ Successfully deleted ${response.count} data entries.`);",
+                  "} else {",
+                  "    console.log('❌ Failed to delete data');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/admin/data/all",
+              "host": ["{{base_url}}"],
+              "path": ["api", "admin", "data", "all"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📊 IoT Device Data Endpoints",
+      "item": [
+        {
+          "name": "Submit Air Quality Data (Offline Device)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    console.log('✅ Air quality data submitted successfully');",
+                  "    const response = pm.response.json();",
+                  "    console.log('AQI:', response.data.aqi);",
+                  "    console.log('Category:', response.data.airQualityCategory);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-API-Key",
+                "value": "{{device_api_key}}",
+                "description": "Device API Key for IoT authentication"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceId\": \"OFFICE-SENSOR-01\",\n  \"pm25\": 12.5,\n  \"pm10\": 20.1,\n  \"temperature\": 24.0,\n  \"humidity\": 60.0,\n  \"co2\": 420,\n  \"voc\": 0.5,\n  \"aqi\": 50,\n  \"location\": {\n    \"name\": \"Main Office\",\n    \"coordinates\": {\n      \"latitude\": -6.2088,\n      \"longitude\": 106.8456\n    }\n  },\n  \"batteryLevel\": 85,\n  \"signalStrength\": -50\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/data",
+              "host": ["{{base_url}}"],
+              "path": ["api", "data"]
+            }
+          }
+        },
+        {
+          "name": "Submit Good AQI Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-API-Key",
+                "value": "{{device_api_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceId\": \"AIR-SENSOR-002\",\n  \"pm25\": 8.5,\n  \"pm10\": 14.2,\n  \"temperature\": 22.1,\n  \"humidity\": 58.3,\n  \"co2\": 380,\n  \"voc\": 0.3,\n  \"aqi\": 35\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/data",
+              "host": ["{{base_url}}"],
+              "path": ["api", "data"]
+            }
+          }
+        },
+        {
+          "name": "Submit Poor AQI Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-API-Key",
+                "value": "{{device_api_key}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceId\": \"AIR-SENSOR-003\",\n  \"pm25\": 45.8,\n  \"pm10\": 67.2,\n  \"temperature\": 26.8,\n  \"humidity\": 72.1,\n  \"co2\": 680,\n  \"voc\": 2.1,\n  \"aqi\": 162\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/data",
+              "host": ["{{base_url}}"],
+              "path": ["api", "data"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👤 User Profile & API Key Management",
+      "item": [
+        {
+          "name": "Reveal API Key and Save",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('device_api_key', response.apiKey);",
+                  "    console.log('✅ Device API Key saved to environment');",
+                  "    console.log('API Key:', response.apiKey.substring(0, 20) + '...');",
+                  "} else {",
+                  "    console.log('❌ Failed to reveal API key. Check if user is logged in and has an API key.');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/me/api-key/reveal",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "me", "api-key", "reveal"]
+            }
+          }
+        },
+        {
+          "name": "Get Latest Data (for Dashboard)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/data/latest",
+              "host": ["{{base_url}}"],
+              "path": ["api", "data", "latest"]
+            }
+          }
+        },
+        {
+          "name": "Get Chart Data (for Dashboard)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/data/charts?hours=24",
+              "host": ["{{base_url}}"],
+              "path": ["api", "data", "charts"],
+              "query": [
+                {
+                  "key": "hours",
+                  "value": "24"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
