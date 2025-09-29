@@ -138,7 +138,7 @@ router.get('/users', async (req, res) => {
     const skip = (parseInt(page) - 1) * limitNum;
 
     const [users, total] = await Promise.all([
-      User.find(query, { isActive: 1 }) // Include inactive users for admin
+      User.find(query) // Include all user fields
         .sort(sort)
         .limit(limitNum)
         .skip(skip)

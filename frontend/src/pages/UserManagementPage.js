@@ -258,7 +258,7 @@ const UserManagementPage = () => {
               <tbody>
                 {users.map((user, index) => (
                   <motion.tr
-                    key={user.id}
+                    key={user._id || user.id || index}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: index * 0.05 }}
@@ -267,11 +267,11 @@ const UserManagementPage = () => {
                     <td className="user-cell">
                       <div className="user-info">
                         <div className="user-avatar">
-                          {user.name.charAt(0).toUpperCase()}
+                          {user.name?.charAt(0)?.toUpperCase() || '?'}
                         </div>
                         <div className="user-details">
-                          <span className="user-name">{user.name}</span>
-                          <span className="user-email">{user.email}</span>
+                          <span className="user-name">{user.name || 'N/A'}</span>
+                          <span className="user-email">{user.email || 'N/A'}</span>
                         </div>
                       </div>
                     </td>
@@ -330,7 +330,7 @@ const UserManagementPage = () => {
                         </motion.button>
                         <motion.button
                           className="action-button delete"
-                          onClick={() => handleDeleteUser(user.id, user.name)}
+                          onClick={() => handleDeleteUser(user._id || user.id, user.name)}
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
                           title="Deactivate User"
@@ -505,7 +505,7 @@ const UserManagementPage = () => {
                   role: formData.get('role'),
                   isActive: formData.get('isActive') === 'on'
                 };
-                handleUpdateUser(editingUser.id, updates);
+                handleUpdateUser(editingUser._id || editingUser.id, updates);
               }}
               className="modal-form"
             >

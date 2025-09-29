@@ -334,7 +334,7 @@ const ApiLogPage = () => {
                         
                         return (
                           <motion.tr
-                            key={log._id || index}
+                            key={log._id || `log-${index}`}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.3, delay: index * 0.02 }}
@@ -393,9 +393,9 @@ const ApiLogPage = () => {
                               {log.userId ? (
                                 <div className="user-info">
                                   <div className="user-avatar-small">
-                                    {log.userId.name?.charAt(0).toUpperCase()}
+                                    {log.userId.name?.charAt(0)?.toUpperCase() || '?'}
                                   </div>
-                                  <span>{log.userId.name}</span>
+                                  <span>{log.userId.name || 'N/A'}</span>
                                 </div>
                               ) : log.deviceApiKey ? (
                                 <div className="device-info">

@@ -275,7 +275,7 @@ if __name__ == '__main__':
       >
         <div className="header-content">
           <div className="user-avatar-large">
-            {user?.name?.charAt(0).toUpperCase()}
+            {user?.name?.charAt(0)?.toUpperCase() || '?'}
           </div>
           <div className="user-info">
             <h1>{user?.name}</h1>

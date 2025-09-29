@@ -233,7 +233,7 @@ const DataTable = ({ limit = 10 }) => {
           <tbody>
             {data.map((row, index) => (
               <motion.tr
-                key={row._id || index}
+                key={row._id || `row-${index}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}

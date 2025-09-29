@@ -63,7 +63,7 @@ const DeviceStatus = ({ devices = [] }) => {
         
         return (
           <motion.div
-            key={device.deviceId}
+            key={device.deviceId || `device-${index}`}
             className={`device-card glass-card ${device.status}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

@@ -140,7 +140,7 @@ const Layout = ({ children }) => {
           <div className="sidebar-footer">
             <div className="user-info">
               <div className="user-avatar">
-                {user?.name?.charAt(0).toUpperCase()}
+                {user?.name?.charAt(0)?.toUpperCase() || '?'}
               </div>
               <div className="user-details">
                 <p className="user-name">{user?.name}</p>
@@ -195,7 +195,7 @@ const Layout = ({ children }) => {
             <div className="user-badge">
               <span className="user-name-header">{user?.name}</span>
               <div className="user-avatar-small">
-                {user?.name?.charAt(0).toUpperCase()}
+                {user?.name?.charAt(0)?.toUpperCase() || '?'}
               </div>
             </div>
           </div>
