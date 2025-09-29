@@ -4,7 +4,8 @@ import App from './App';
 import axios from 'axios';
 
 // Configure axios defaults
-axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+// Use direct baseURL to backend for now (proxy having issues)
+axios.defaults.baseURL = 'http://localhost:5000';
 axios.defaults.timeout = 10000;
 
 // Add request interceptor for better error handling

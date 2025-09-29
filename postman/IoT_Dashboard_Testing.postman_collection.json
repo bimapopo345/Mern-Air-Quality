@@ -34,14 +34,37 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "if (pm.response.code === 200) {",
-                  "    const response = pm.response.json();",
-                  "    pm.environment.set('jwt_token', response.token);",
-                  "    pm.environment.set('user_id', response.user.id);",
-                  "    pm.environment.set('user_role', response.user.role);",
-                  "    console.log('✅ Admin login successful, token saved');",
-                  "} else {",
-                  "    console.log('❌ Login failed');",
+                  "try {",
+                  "    if (pm.response.code === 200) {",
+                  "        const response = pm.response.json();",
+                  "        if (response && response.token) {",
+                  "            // Save token",
+                  "            pm.environment.set('jwt_token', response.token);",
+                  "            console.log('✅ JWT Token saved to environment.');",
+                  "",
+                  "            // Save user data if available",
+                  "            if (response.user) {",
+                  "                if (response.user.id) {",
+                  "                    pm.environment.set('user_id', response.user.id.toString());",
+                  "                    console.log('✅ User ID saved:', response.user.id);",
+                  "                }",
+                  "                if (response.user.role) {",
+                  "                    pm.environment.set('user_role', response.user.role);",
+                  "                    console.log('✅ User Role saved:', response.user.role);",
+                  "                }",
+                  "            }",
+                  "        } else {",
+                  "            console.error('❌ ERROR: No token found in response.');",
+                  "            console.error('Response Body:', JSON.stringify(response, null, 2));",
+                  "        }",
+                  "    } else {",
+                  "        console.error('❌ ERROR: Login failed with status code:', pm.response.code);",
+                  "        console.error('Response Body:', pm.response.text());",
+                  "    }",
+                  "} catch (e) {",
+                  "    console.error('❌ CRITICAL ERROR in Postman Test Script:');",
+                  "    console.error(e.message);",
+                  "    console.error('Stack:', e.stack);",
                   "}"
                 ]
               }
@@ -67,7 +90,7 @@
           }
         },
         {
-          "name": "Login Regular User",
+          "name": "Login Jane Smith User (Owner of Sensors)",
           "event": [
             {
               "listen": "test",
@@ -76,10 +99,24 @@
                 "exec": [
                   "if (pm.response.code === 200) {",
                   "    const response = pm.response.json();",
-                  "    pm.environment.set('jwt_token', response.token);",
-                  "    pm.environment.set('user_id', response.user.id);",
-                  "    pm.environment.set('user_role', response.user.role);",
-                  "    console.log('✅ User login successful, token saved');",
+                  "    // Check if response and token exist",
+                  "    if (response && response.token) {",
+                  "        pm.environment.set('jwt_token', response.token);",
+                  "        // Set user_id, ensuring it's a string",
+                  "        if (response.user && response.user._id) {",
+                  "            pm.environment.set('user_id', response.user._id.toString());",
+                  "        }",
+                  "        // Set user_role",
+                  "        if (response.user && response.user.role) {",
+                  "            pm.environment.set('user_role', response.user.role);",
+                  "        }",
+                  "        console.log('✅ User login successful, token and user data saved.');",
+                  "        console.log('Token:', response.token.substring(0, 30) + '...');",
+                  "    } else {",
+                  "        console.error('❌ Login response did not contain a token.');",
+                  "    }",
+                  "} else {",
+                  "    console.log('❌ User login failed with status code:', pm.response.code);",
                   "}"
                 ]
               }
@@ -95,7 +132,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"john.doe@company.com\",\n  \"password\": \"user123\"\n}"
+              "raw": "{\n  \"email\": \"jane.smith@company.com\",\n  \"password\": \"user123\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/api/auth/login",
@@ -146,9 +183,10 @@
     },
     {
       "name": "📊 IoT Device Data Endpoints",
+      "description": "IMPORTANT: Run 'Set Jane Smith API Key (Direct)' or 'Login Jane Smith User' first to set the correct device_api_key. The sensors OFFICE-SENSOR-01 and AIR-SENSOR-002 belong to Jane Smith (ID: 68d9cc51d7077fb4b4ba570b).",
       "item": [
         {
-          "name": "Submit Air Quality Data (Offline Device)",
+          "name": "Submit Air Quality Data (OFFICE-SENSOR-01)",
           "event": [
             {
               "listen": "test",
@@ -190,7 +228,7 @@
           }
         },
         {
-          "name": "Submit Good AQI Data",
+          "name": "Submit Good AQI Data (AIR-SENSOR-002)",
           "request": {
             "method": "POST",
             "header": [
@@ -245,6 +283,37 @@
       "name": "👤 User Profile & API Key Management",
       "item": [
         {
+          "name": "Set Jane Smith API Key (Direct)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Directly set Jane Smith's API Key from MongoDB",
+                  "const janeApiKey = 'daq_mg4d5g9o_80fe661889d4a895cad3c3a863c99c7be80129dd92451820';",
+                  "pm.environment.set('device_api_key', janeApiKey);",
+                  "console.log('✅ Jane Smith Device API Key set directly from MongoDB data.');",
+                  "console.log('API Key:', janeApiKey.substring(0, 20) + '...');",
+                  "",
+                  "// Also set user_id for Jane Smith",
+                  "pm.environment.set('user_id', '68d9cc51d7077fb4b4ba570b');",
+                  "console.log('✅ Jane Smith User ID set: 68d9cc51d7077fb4b4ba570b');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "status"]
+            }
+          }
+        },
+        {
           "name": "Reveal API Key and Save",
           "event": [
             {
@@ -254,11 +323,17 @@
                 "exec": [
                   "if (pm.response.code === 200) {",
                   "    const response = pm.response.json();",
-                  "    pm.environment.set('device_api_key', response.apiKey);",
-                  "    console.log('✅ Device API Key saved to environment');",
-                  "    console.log('API Key:', response.apiKey.substring(0, 20) + '...');",
+                  "    // Check if response and apiKey exist",
+                  "    if (response && response.apiKey) {",
+                  "        pm.environment.set('device_api_key', response.apiKey);",
+                  "        console.log('✅ Device API Key saved to environment.');",
+                  "        console.log('API Key:', response.apiKey.substring(0, 20) + '...');",
+                  "    } else {",
+                  "        console.error('❌ Reveal API Key response did not contain an apiKey.');",
+                  "    }",
                   "} else {",
-                  "    console.log('❌ Failed to reveal API key. Check if user is logged in and has an API key.');",
+                  "    console.log('❌ Failed to reveal API key with status code:', pm.response.code);",
+                  "    console.log('Check if user is logged in (jwt_token is set) and has an API key associated.');",
                   "}"
                 ]
               }
@@ -316,6 +391,50 @@
                   "value": "24"
                 }
               ]
+            }
+          }
+        },
+        {
+          "name": "Test Complete Dashboard Flow (Jane Smith)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response && response.data) {",
+                  "        console.log('✅ Dashboard data retrieved successfully for Jane Smith');",
+                  "        console.log('Latest AQI:', response.data.aqi);",
+                  "        console.log('Device ID:', response.data.deviceId);",
+                  "        console.log('Temperature:', response.data.temperature + '°C');",
+                  "        console.log('PM2.5:', response.data.pm25 + ' μg/m³');",
+                  "    } else {",
+                  "        console.log('⚠️  No data found for user');",
+                  "    }",
+                  "} else if (pm.response.code === 404) {",
+                  "    console.log('❌ No air quality data found for this user');",
+                  "    console.log('Make sure to submit sensor data first using the IoT Device endpoints');",
+                  "} else {",
+                  "    console.log('❌ Failed to get latest data:', pm.response.code);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{jwt_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/data/latest",
+              "host": ["{{base_url}}"],
+              "path": ["api", "data", "latest"]
             }
           }
         }
