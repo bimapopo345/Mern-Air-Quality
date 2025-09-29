@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   Home, 
@@ -16,8 +16,26 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import './Layout.css';
 
 const Layout = ({ children }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true); // Default open di desktop
+  const [isMobile, setIsMobile] = useState(false);
   const { user, logout, isAdmin } = useAuth();
+
+  // Check if mobile on mount and window resize
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      if (mobile) {
+        setSidebarOpen(false); // Close sidebar di mobile by default
+      } else {
+        setSidebarOpen(true); // Open sidebar di desktop by default
+      }
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -71,9 +89,9 @@ const Layout = ({ children }) => {
     <div className="layout">
       {/* Sidebar */}
       <motion.aside
-        className={`sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}
-        initial={{ x: -280 }}
-        animate={{ x: sidebarOpen ? 0 : -280 }}
+        className={`sidebar ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}
+        initial={false}
+        animate={{ x: isMobile ? (sidebarOpen ? 0 : -280) : (sidebarOpen ? 0 : -280) }}
         transition={{ duration: 0.3, ease: 'easeInOut' }}
       >
         <div className="sidebar-content">
@@ -156,7 +174,7 @@ const Layout = ({ children }) => {
       </motion.aside>
 
       {/* Main Content */}
-      <div className="main-content">
+      <div className={`main-content ${sidebarOpen ? '' : 'sidebar-closed'}`}>
         {/* Header */}
         <header className="header">
           <motion.button
@@ -164,6 +182,7 @@ const Layout = ({ children }) => {
             onClick={() => setSidebarOpen(!sidebarOpen)}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
+            title={sidebarOpen ? 'Close Menu' : 'Open Menu'}
           >
             {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
           </motion.button>
@@ -196,7 +215,7 @@ const Layout = ({ children }) => {
       </div>
 
       {/* Sidebar Overlay for Mobile */}
-      {sidebarOpen && (
+      {sidebarOpen && isMobile && (
         <motion.div
           className="sidebar-overlay"
           initial={{ opacity: 0 }}

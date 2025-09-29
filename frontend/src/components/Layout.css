@@ -17,6 +17,8 @@
   z-index: 1000;
   display: flex;
   flex-direction: column;
+  transform: translateX(0);
+  transition: transform 0.3s ease;
 }
 
 .sidebar-content {
@@ -215,6 +217,7 @@
   display: flex;
   flex-direction: column;
   transition: margin-left 0.3s ease;
+  min-height: 100vh;
 }
 
 .header {
@@ -228,10 +231,11 @@
   position: sticky;
   top: 0;
   z-index: 100;
+  min-height: 70px;
 }
 
 .sidebar-toggle {
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
   width: 40px;
@@ -246,6 +250,7 @@
 
 .sidebar-toggle:hover {
   background: rgba(100, 255, 218, 0.2);
+  transform: scale(1.05);
 }
 
 .header-title h2 {
@@ -314,6 +319,40 @@
   z-index: 999;
 }
 
+/* Desktop - Sidebar always visible unless manually closed */
+@media (min-width: 769px) {
+  .sidebar {
+    transform: translateX(0);
+    position: fixed;
+  }
+  
+  .sidebar.sidebar-closed {
+    transform: translateX(-280px);
+  }
+  
+  .main-content {
+    margin-left: 280px;
+    transition: margin-left 0.3s ease;
+  }
+  
+  .main-content.sidebar-closed {
+    margin-left: 0;
+  }
+  
+  .sidebar-overlay {
+    display: none !important;
+  }
+  
+  .sidebar-toggle {
+    background: rgba(100, 255, 218, 0.1);
+    border: 1px solid rgba(100, 255, 218, 0.3);
+  }
+  
+  .header-title h2 {
+    margin-left: 1rem;
+  }
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .main-content {
@@ -326,10 +365,6 @@
 
   .sidebar-open {
     transform: translateX(0);
-  }
-
-  .sidebar-toggle {
-    display: flex;
   }
 
   .sidebar-overlay {

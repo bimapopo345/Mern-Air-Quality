@@ -77,7 +77,7 @@ npm install
 Create `.env.local` file in frontend directory:
 ```env
 REACT_APP_API_URL=http://localhost:5000/api
-REACT_APP_OPENROUTER_API_KEY=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
+REACT_APP_OPENROUTER_API_KEY=sk-or-v1-xxx
 ```
 
 ### 4. Database Setup
