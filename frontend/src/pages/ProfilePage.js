@@ -42,7 +42,7 @@ const ProfilePage = () => {
   const fetchApiKeyInfo = async () => {
     try {
       setLoading(prev => ({ ...prev, apiKey: true }));
-      const response = await axios.get('/users/me/api-key');
+      const response = await axios.get('/api/users/me/api-key');
       setApiKeyData(response.data.apiKey);
     } catch (error) {
       console.error('Failed to fetch API key info:', error);
@@ -74,7 +74,7 @@ const ProfilePage = () => {
   const revealApiKey = async () => {
     try {
       setLoading(prev => ({ ...prev, apiKey: true }));
-      const response = await axios.post('/users/me/api-key/reveal');
+      const response = await axios.post('/api/users/me/api-key/reveal');
       setApiKeyData(prev => ({
         ...prev,
         fullKey: response.data.apiKey
@@ -112,7 +112,7 @@ const ProfilePage = () => {
 
     try {
       setLoading(prev => ({ ...prev, regenerate: true }));
-      const response = await axios.post('/users/me/api-key/regenerate');
+      const response = await axios.post('/api/users/me/api-key/regenerate');
       setApiKeyData(prev => ({
         ...prev,
         masked: response.data.newApiKey.substring(0, 8) + '*'.repeat(response.data.newApiKey.length - 12) + response.data.newApiKey.substring(response.data.newApiKey.length - 4),

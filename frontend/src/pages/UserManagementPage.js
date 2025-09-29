@@ -41,7 +41,7 @@ const UserManagementPage = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/admin/users', {
+      const response = await axios.get('/api/admin/users', {
         params: {
           page,
           limit: 20,
@@ -71,7 +71,7 @@ const UserManagementPage = () => {
     e.preventDefault();
     
     try {
-      await axios.post('/auth/register', newUser);
+      await axios.post('/api/auth/register', newUser);
       toast.success('User created successfully');
       setShowCreateModal(false);
       setNewUser({ name: '', email: '', password: '', role: 'user' });
@@ -85,7 +85,7 @@ const UserManagementPage = () => {
   // Update user
   const handleUpdateUser = async (userId, updates) => {
     try {
-      await axios.put(`/admin/users/${userId}`, updates);
+      await axios.put(`/api/admin/users/${userId}`, updates);
       toast.success('User updated successfully');
       setEditingUser(null);
       fetchUsers();
@@ -102,7 +102,7 @@ const UserManagementPage = () => {
     }
 
     try {
-      await axios.delete(`/admin/users/${userId}`);
+      await axios.delete(`/api/admin/users/${userId}`);
       toast.success('User deactivated successfully');
       fetchUsers();
     } catch (error) {

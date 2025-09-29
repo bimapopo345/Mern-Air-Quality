@@ -45,7 +45,7 @@ const ApiLogPage = () => {
         }
       });
 
-      const response = await axios.get('/admin/logs', { params });
+      const response = await axios.get('/api/admin/logs', { params });
       setLogs(response.data.logs || []);
       setTotalPages(response.data.pagination?.pages || 1);
     } catch (error) {
@@ -59,7 +59,7 @@ const ApiLogPage = () => {
   // Fetch statistics
   const fetchStats = async () => {
     try {
-      const response = await axios.get('/admin/logs/stats', {
+      const response = await axios.get('/api/admin/logs/stats', {
         params: { hours: filters.hours }
       });
       setStats(response.data);
@@ -128,7 +128,7 @@ const ApiLogPage = () => {
       });
       params.limit = 1000; // Export more logs
 
-      const response = await axios.get('/admin/logs', { params });
+      const response = await axios.get('/api/admin/logs', { params });
       const logsData = response.data.logs || [];
       
       const csvContent = [

@@ -1,0 +1,3 @@
+# Internal corporate application
+User-agent: *
+Disallow: /

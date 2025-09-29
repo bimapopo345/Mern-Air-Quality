@@ -23,7 +23,7 @@ const DataTable = ({ limit = 10 }) => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/data', {
+      const response = await axios.get('/api/data', {
         params: {
           limit,
           page,

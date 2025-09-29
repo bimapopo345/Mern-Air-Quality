@@ -33,10 +33,10 @@ const DashboardPage = () => {
   const fetchDashboardData = async () => {
     try {
       const [latestRes, chartRes, devicesRes, alertsRes] = await Promise.all([
-        axios.get('/data/latest'),
-        axios.get('/data/charts?hours=24&type=hourly'),
-        axios.get('/users/me/devices'),
-        axios.get('/data/alerts?threshold=100&hours=24')
+        axios.get('/api/data/latest'),
+        axios.get('/api/data/charts?hours=24&type=hourly'),
+        axios.get('/api/users/me/devices'),
+        axios.get('/api/data/alerts?threshold=100&hours=24')
       ]);
 
       setDashboardData({
