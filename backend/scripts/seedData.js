@@ -31,6 +31,8 @@ async function seedDatabase() {
       password: 'admin123', // Will be hashed automatically
       role: 'admin'
     });
+    // Generate API key manually to ensure it's created
+    adminUser.deviceApiKey = adminUser.generateDeviceApiKey();
     await adminUser.save();
     console.log('👨‍💼 Created admin user:', adminUser.email);
     console.log('🔑 Admin API Key:', adminUser.deviceApiKey);
@@ -42,6 +44,8 @@ async function seedDatabase() {
       password: 'user123', // Will be hashed automatically
       role: 'user'
     });
+    // Generate API key manually to ensure it's created
+    regularUser.deviceApiKey = regularUser.generateDeviceApiKey();
     await regularUser.save();
     console.log('👤 Created regular user:', regularUser.email);
     console.log('🔑 User API Key:', regularUser.deviceApiKey);
@@ -53,6 +57,8 @@ async function seedDatabase() {
       password: 'user123',
       role: 'user'
     });
+    // Generate API key manually to ensure it's created
+    testUser.deviceApiKey = testUser.generateDeviceApiKey();
     await testUser.save();
     console.log('👤 Created test user:', testUser.email);
     console.log('🔑 Test User API Key:', testUser.deviceApiKey);
