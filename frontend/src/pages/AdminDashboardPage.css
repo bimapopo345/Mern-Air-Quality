@@ -1,0 +1,389 @@
+/* User Selector Styles */
+.admin-user-selector {
+  grid-column: 1 / -1;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.admin-user-selector-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.admin-user-selector-header .panel-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #64ffda;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.admin-user-list-horizontal {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.admin-user-list-horizontal::-webkit-scrollbar {
+  width: 6px;
+}
+
+.admin-user-list-horizontal::-webkit-scrollbar-track {
+  background: rgba(100, 255, 218, 0.1);
+  border-radius: 3px;
+}
+
+.admin-user-list-horizontal::-webkit-scrollbar-thumb {
+  background: rgba(100, 255, 218, 0.3);
+  border-radius: 3px;
+}
+
+.admin-user-list-horizontal::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 255, 218, 0.5);
+}
+
+/* Database View Styles */
+.admin-database-view {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.database-controls {
+  padding: 1.5rem;
+}
+
+.database-controls-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.database-controls-header h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #64ffda;
+}
+
+.database-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.filter-toggle-btn,
+.export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  background: rgba(100, 255, 218, 0.12);
+  border: 1px solid rgba(100, 255, 218, 0.35);
+  color: #64ffda;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-toggle-btn:hover,
+.export-btn:hover {
+  background: rgba(100, 255, 218, 0.2);
+  border-color: rgba(100, 255, 218, 0.5);
+}
+
+.export-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.database-filters {
+  padding: 1rem;
+  background: rgba(100, 255, 218, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(100, 255, 218, 0.15);
+}
+
+.filter-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.filter-row:last-child {
+  margin-bottom: 0;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.filter-group label {
+  font-size: 0.85rem;
+  color: #8892b0;
+  font-weight: 500;
+}
+
+.filter-group input,
+.filter-group select {
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(100, 255, 218, 0.2);
+  border-radius: 6px;
+  color: #e6f1ff;
+  font-size: 0.9rem;
+}
+
+.filter-group input:focus,
+.filter-group select:focus {
+  outline: none;
+  border-color: #64ffda;
+  box-shadow: 0 0 0 2px rgba(100, 255, 218, 0.1);
+}
+
+.database-stats {
+  display: flex;
+  gap: 2rem;
+  padding: 1rem 0;
+  border-top: 1px solid rgba(100, 255, 218, 0.15);
+  margin-top: 1rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: #8892b0;
+}
+
+.stat-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #64ffda;
+}
+
+.database-table-container {
+  padding: 1.5rem;
+  overflow: hidden;
+}
+
+.database-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 3rem;
+  color: #8892b0;
+}
+
+.database-table-wrapper {
+  overflow-x: auto;
+  margin: -1rem;
+  padding: 1rem;
+}
+
+.database-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.database-table th {
+  background: rgba(100, 255, 218, 0.1);
+  color: #64ffda;
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid rgba(100, 255, 218, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.database-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid rgba(100, 255, 218, 0.1);
+  color: #e6f1ff;
+}
+
+.database-table tbody tr:hover {
+  background: rgba(100, 255, 218, 0.05);
+}
+
+.user-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.user-name {
+  font-weight: 500;
+  color: #64ffda;
+}
+
+.user-email {
+  font-size: 0.75rem;
+  color: #8892b0;
+}
+
+.aqi-value {
+  font-weight: 600;
+}
+
+.database-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(100, 255, 218, 0.15);
+}
+
+.pagination-btn {
+  padding: 0.5rem 1rem;
+  background: rgba(100, 255, 218, 0.12);
+  border: 1px solid rgba(100, 255, 218, 0.35);
+  color: #64ffda;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: rgba(100, 255, 218, 0.2);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  color: #8892b0;
+  font-size: 0.85rem;
+}
+
+.database-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 3rem;
+  color: #8892b0;
+  text-align: center;
+}
+
+.database-empty h3 {
+  margin: 0;
+  color: #64ffda;
+}
+
+.database-empty p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .admin-dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-user-panel {
+    order: -1;
+  }
+
+  .admin-dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .database-controls-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .database-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .filter-row {
+    grid-template-columns: 1fr;
+  }
+
+  .database-stats {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-view-toggle {
+    width: 100%;
+  }
+
+  .view-toggle-btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .database-table-wrapper {
+    margin: -1rem -0.5rem;
+    padding: 1rem 0.5rem;
+  }
+
+  .database-table {
+    font-size: 0.75rem;
+  }
+
+  .database-table th,
+  .database-table td {
+    padding: 0.5rem;
+  }
+
+  .database-pagination {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+
+/* User selection indicator styles */
+.admin-user-item.data-selected {
+  border-color: #ff6b6b;
+  box-shadow: 0 0 15px rgba(255, 107, 107, 0.2);
+}
+
+.data-selected-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+  padding: 0.3rem 0.6rem;
+  background: rgba(255, 107, 107, 0.15);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: #ff6b6b;
+}

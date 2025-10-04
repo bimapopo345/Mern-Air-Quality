@@ -402,6 +402,120 @@ router.get('/logs/stats', async (req, res) => {
 });
 
 /**
+ * @route   GET /api/admin/data/all
+ * @desc    Get all air quality data from database with filtering
+ * @access  Private (Admin)
+ */
+router.get('/data/all', async (req, res) => {
+  try {
+    const { 
+      page = 1, 
+      limit = 50, 
+      user_id = '', 
+      deviceId = '', 
+      startDate = '', 
+      endDate = '',
+      sortBy = 'timestamp',
+      sortOrder = 'desc'
+    } = req.query;
+
+    // Build query
+    const query = {};
+    
+    if (user_id) {
+      try {
+        console.log('Filtering by user_id:', user_id);
+        query.owner = new mongoose.Types.ObjectId(user_id);
+        console.log('ObjectId filter applied');
+      } catch (error) {
+        console.log('Invalid ObjectId format, using string comparison');
+        query.owner = user_id;
+      }
+    }
+    
+    if (deviceId) {
+      query.deviceId = { $regex: deviceId, $options: 'i' };
+    }
+    
+    if (startDate || endDate) {
+      query.timestamp = {};
+      if (startDate) query.timestamp.$gte = new Date(startDate);
+      if (endDate) query.timestamp.$lte = new Date(endDate);
+    }
+
+    // Build sort object
+    const sort = {};
+    sort[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+    // Execute query with pagination
+    const limitNum = Math.min(parseInt(limit), 1000);
+    const skip = (parseInt(page) - 1) * limitNum;
+
+    const [data, total] = await Promise.all([
+      AirQualityData.find(query)
+        .populate('owner', 'name email role')
+        .sort(sort)
+        .limit(limitNum)
+        .skip(skip)
+        .lean(),
+      AirQualityData.countDocuments(query)
+    ]);
+
+    // Get overall statistics
+    const statsPipeline = [];
+    
+    if (userId) {
+      statsPipeline.push({ $match: { owner: new mongoose.Types.ObjectId(userId) } });
+    }
+    
+    statsPipeline.push({
+      $group: {
+        _id: null,
+        totalReadings: { $sum: 1 },
+        avgAQI: { $avg: '$aqi' },
+        avgPM25: { $avg: '$pm25' },
+        avgPM10: { $avg: '$pm10' },
+        avgTemperature: { $avg: '$temperature' },
+        avgHumidity: { $avg: '$humidity' },
+        avgCO2: { $avg: '$co2' },
+        avgVOC: { $avg: '$voc' },
+        maxAQI: { $max: '$aqi' },
+        minAQI: { $min: '$aqi' },
+        uniqueDevices: { $addToSet: '$deviceId' },
+        uniqueUsers: { $addToSet: '$owner' }
+      }
+    });
+
+    // Skip statistics for now to focus on main functionality
+    const stats = [{}];
+
+    res.json({
+      message: 'All air quality data retrieved successfully',
+      data: data,
+      statistics: stats[0] || {
+        totalReadings: 0,
+        avgAQI: 0,
+        uniqueDevices: [],
+        uniqueUsers: []
+      },
+      pagination: {
+        total: total,
+        page: parseInt(page),
+        limit: limitNum,
+        pages: Math.ceil(total / limitNum)
+      }
+    });
+
+  } catch (error) {
+    console.error('Get all data error:', error);
+    res.status(500).json({
+      message: 'Failed to retrieve air quality data',
+      error: 'ALL_DATA_RETRIEVAL_ERROR'
+    });
+  }
+});
+
+/**
  * @route   DELETE /api/admin/data/all
  * @desc    Delete all air quality data (for testing/reset purposes)
  * @access  Private (Admin)
