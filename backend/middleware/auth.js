@@ -30,6 +30,7 @@ const authenticateToken = async (req, res, next) => {
 
     req.user = user;
     req.userId = user._id;
+    req.userRole = user.role;
     next();
   } catch (error) {
     console.error('Token authentication error:', error);

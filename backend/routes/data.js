@@ -177,20 +177,23 @@ router.get('/', authenticateToken, async (req, res) => {
  */
 router.get('/latest', authenticateToken, async (req, res) => {
   try {
-    const { deviceId } = req.query;
+    const { deviceId, userId } = req.query;
+
+    // Allow admins to fetch data for other users
+    const targetUserId = userId && req.userRole === 'admin' ? userId : req.userId;
 
     let latestData;
     if (deviceId) {
       latestData = await AirQualityData.getLatestByDevice(deviceId);
-      // Verify ownership
-      if (latestData && !latestData.owner.equals(req.userId)) {
+      // Verify ownership (skip for admins fetching other users' data)
+      if (latestData && !latestData.owner.equals(targetUserId) && !(userId && req.userRole === 'admin')) {
         return res.status(403).json({
           message: 'Access denied to this device data',
           error: 'ACCESS_DENIED'
         });
       }
     } else {
-      latestData = await AirQualityData.getLatestByOwner(req.userId);
+      latestData = await AirQualityData.getLatestByOwner(targetUserId);
     }
 
     if (!latestData) {
@@ -221,17 +224,20 @@ router.get('/latest', authenticateToken, async (req, res) => {
  */
 router.get('/charts', authenticateToken, async (req, res) => {
   try {
-    const { hours = 24, type = 'hourly' } = req.query;
+    const { hours = 24, type = 'hourly', userId } = req.query;
+    
+    // Allow admins to fetch data for other users
+    const targetUserId = userId && req.userRole === 'admin' ? userId : req.userId;
     
     const hoursNum = Math.min(parseInt(hours), 168); // Max 7 days
 
     let chartData;
     if (type === 'hourly') {
-      chartData = await AirQualityData.getHourlyAverages(req.userId, hoursNum);
+      chartData = await AirQualityData.getHourlyAverages(targetUserId, hoursNum);
     } else {
       // Default to recent readings
       const startDate = new Date(Date.now() - hoursNum * 60 * 60 * 1000);
-      chartData = await AirQualityData.getReadingsInRange(req.userId, startDate, new Date(), 100);
+      chartData = await AirQualityData.getReadingsInRange(targetUserId, startDate, new Date(), 100);
     }
 
     res.json({
@@ -257,10 +263,13 @@ router.get('/charts', authenticateToken, async (req, res) => {
  */
 router.get('/alerts', authenticateToken, async (req, res) => {
   try {
-    const { threshold = 150, hours = 24 } = req.query;
+    const { threshold = 150, hours = 24, userId } = req.query;
+    
+    // Allow admins to fetch data for other users
+    const targetUserId = userId && req.userRole === 'admin' ? userId : req.userId;
     
     const alertReadings = await AirQualityData.getAlertReadings(
-      req.userId, 
+      targetUserId, 
       parseInt(threshold), 
       parseInt(hours)
     );

@@ -31,27 +31,49 @@
   font-weight: 600;
 }
 
-.fetch-all-data-btn {
+.button-group {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.fetch-user-data-btn,
+.export-all-data-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.6rem 1.2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
   border-radius: 8px;
-  color: white;
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.fetch-all-data-btn:hover:not(:disabled) {
+.fetch-user-data-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.fetch-user-data-btn:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
 }
 
-.fetch-all-data-btn:disabled {
+.export-all-data-btn {
+  background: rgba(100, 255, 218, 0.15);
+  color: #64ffda;
+  border: 1px solid rgba(100, 255, 218, 0.3);
+}
+
+.export-all-data-btn:hover:not(:disabled) {
+  background: rgba(100, 255, 218, 0.25);
+  transform: translateY(-2px);
+}
+
+.fetch-user-data-btn:disabled,
+.export-all-data-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;

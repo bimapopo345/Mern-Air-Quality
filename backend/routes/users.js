@@ -268,9 +268,14 @@ router.post('/me/api-key/regenerate', authenticateToken, async (req, res) => {
  */
 router.get('/me/devices', authenticateToken, async (req, res) => {
   try {
+    const { userId } = req.query;
+    
+    // Allow admins to fetch devices for other users
+    const targetUserId = userId && req.userRole === 'admin' ? userId : req.userId;
+    
     // Get unique devices with their latest data
     const devices = await AirQualityData.aggregate([
-      { $match: { owner: req.userId } },
+      { $match: { owner: targetUserId } },
       {
         $group: {
           _id: '$deviceId',

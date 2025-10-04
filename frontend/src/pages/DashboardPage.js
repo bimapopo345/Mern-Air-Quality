@@ -40,17 +40,21 @@ const DashboardPage = () => {
   const [users, setUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState('');
-  const [allUserData, setAllUserData] = useState(null);
-  const [loadingAllUserData, setLoadingAllUserData] = useState(false);
 
   // Fetch dashboard data
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = async (userId = null) => {
     try {
+      // Build URLs with userId if provided (for admin)
+      const latestUrl = userId ? `/api/data/latest?userId=${userId}` : '/api/data/latest';
+      const chartUrl = userId ? `/api/data/charts?hours=24&type=hourly&userId=${userId}` : '/api/data/charts?hours=24&type=hourly';
+      const devicesUrl = userId ? `/api/users/me/devices?userId=${userId}` : '/api/users/me/devices';
+      const alertsUrl = userId ? `/api/data/alerts?threshold=100&hours=24&userId=${userId}` : '/api/data/alerts?threshold=100&hours=24';
+
       const [latestResult, chartResult, devicesResult, alertsResult] = await Promise.allSettled([
-        axios.get('/api/data/latest'),
-        axios.get('/api/data/charts?hours=24&type=hourly'),
-        axios.get('/api/users/me/devices'),
-        axios.get('/api/data/alerts?threshold=100&hours=24')
+        axios.get(latestUrl),
+        axios.get(chartUrl),
+        axios.get(devicesUrl),
+        axios.get(alertsUrl)
       ]);
 
       if (chartResult.status !== 'fulfilled') throw chartResult.reason;
@@ -109,33 +113,56 @@ const DashboardPage = () => {
 
   // Initial data fetch
   useEffect(() => {
-    fetchDashboardData();
+    fetchDashboardData(isAdmin() && selectedUserId ? selectedUserId : null);
     if (isAdmin()) {
       loadUsers();
     }
 
     // Set up auto-refresh every 30 seconds
-    const interval = setInterval(fetchDashboardData, 30000);
+    const interval = setInterval(() => {
+      fetchDashboardData(isAdmin() && selectedUserId ? selectedUserId : null);
+    }, 30000);
 
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isAdmin, loadUsers]);
+  }, [isAdmin, loadUsers, selectedUserId]);
 
   // Manual refresh
   const handleRefresh = () => {
     setLoading(true);
-    fetchDashboardData();
+    fetchDashboardData(isAdmin() && selectedUserId ? selectedUserId : null);
   };
 
-  // Fetch all data for selected user
-  const handleFetchAllUserData = async (userId) => {
+  // Fetch selected user data for dashboard
+  const handleFetchUserData = async (userId) => {
     if (!userId) {
       toast.error('Please select a user first');
       return;
     }
 
-    setLoadingAllUserData(true);
+    setLoading(true);
+    try {
+      // Fetch dashboard data for selected user
+      await fetchDashboardData(userId);
+      
+      const selectedUser = users.find(u => getUserId(u) === userId);
+      toast.success(`Dashboard updated with data for ${selectedUser?.name}`);
+    } catch (error) {
+      console.error('Failed to fetch user data:', error);
+      toast.error('Failed to load user data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Export all user data to CSV
+  const exportAllUserDataToCSV = async (userId) => {
+    if (!userId) {
+      toast.error('Please select a user first');
+      return;
+    }
+
     try {
       const response = await axios.get('/api/admin/data/all', {
         params: {
@@ -147,53 +174,47 @@ const DashboardPage = () => {
       });
       
       const userData = response.data.data || [];
-      setAllUserData(userData);
-      toast.success(`Loaded ${userData.length} records for user`);
+      const selectedUser = users.find(u => getUserId(u) === userId);
+      
+      if (userData.length === 0) {
+        toast.error('No data to export');
+        return;
+      }
+
+      const headers = [
+        'Timestamp', 'Device ID', 'AQI', 'PM2.5', 'PM10', 
+        'Temperature', 'Humidity', 'CO2', 'VOC', 'Location'
+      ];
+      
+      const csvContent = [
+        headers.join(','),
+        ...userData.map(row => [
+          new Date(row.timestamp).toLocaleString(),
+          `"${row.deviceId}"`,
+          row.aqi,
+          row.pm25,
+          row.pm10,
+          row.temperature,
+          row.humidity,
+          row.co2,
+          row.voc,
+          `"${row.location?.name || ''}"`
+        ].join(','))
+      ].join('\n');
+
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${selectedUser?.name || 'user'}_all_data_${new Date().toISOString().split('T')[0]}.csv`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+      
+      toast.success(`Exported ${userData.length} records for ${selectedUser?.name}`);
     } catch (error) {
-      console.error('Failed to fetch all user data:', error);
-      toast.error('Failed to load user data');
-    } finally {
-      setLoadingAllUserData(false);
+      console.error('Failed to export user data:', error);
+      toast.error('Failed to export user data');
     }
-  };
-
-  // Export user data to CSV
-  const exportUserDataToCSV = (data, selectedUser) => {
-    if (!data || data.length === 0) {
-      toast.error('No data to export');
-      return;
-    }
-
-    const headers = [
-      'Timestamp', 'Device ID', 'AQI', 'PM2.5', 'PM10', 
-      'Temperature', 'Humidity', 'CO2', 'VOC', 'Location'
-    ];
-    
-    const csvContent = [
-      headers.join(','),
-      ...data.map(row => [
-        new Date(row.timestamp).toLocaleString(),
-        `"${row.deviceId}"`,
-        row.aqi,
-        row.pm25,
-        row.pm10,
-        row.temperature,
-        row.humidity,
-        row.co2,
-        row.voc,
-        `"${row.location?.name || ''}"`
-      ].join(','))
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${selectedUser?.name || 'user'}_all_data_${new Date().toISOString().split('T')[0]}.csv`;
-    a.click();
-    window.URL.revokeObjectURL(url);
-    
-    toast.success('User data exported successfully');
   };
 
   const getUserId = (user) => user?._id || user?.id || null;
@@ -250,14 +271,24 @@ const DashboardPage = () => {
               <Users size={20} />
               <h3>Admin User Selection</h3>
             </div>
-            <button 
-              className="fetch-all-data-btn"
-              onClick={() => handleFetchAllUserData(selectedUserId)}
-              disabled={!selectedUserId || loadingAllUserData}
-            >
-              <Database size={16} />
-              {loadingAllUserData ? 'Loading...' : 'Fetch All Data'}
-            </button>
+            <div className="button-group">
+              <button 
+                className="fetch-user-data-btn"
+                onClick={() => handleFetchUserData(selectedUserId)}
+                disabled={!selectedUserId || loading}
+              >
+                <RefreshCw size={16} />
+                {loading ? 'Loading...' : 'Update Dashboard'}
+              </button>
+              <button 
+                className="export-all-data-btn"
+                onClick={() => exportAllUserDataToCSV(selectedUserId)}
+                disabled={!selectedUserId}
+              >
+                <Download size={16} />
+                Export All Data
+              </button>
+            </div>
           </div>
           <div className="user-selection-content">
             <div className="dropdown-container">
@@ -299,81 +330,7 @@ const DashboardPage = () => {
         </motion.div>
       )}
 
-      {/* All User Data Display */}
-      {allUserData && allUserData.length > 0 && (
-        <motion.div 
-          className="all-user-data-card glass-card"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="all-user-data-header">
-            <h3>All Data for {users.find(u => getUserId(u) === selectedUserId)?.name}</h3>
-            <div className="data-actions">
-              <span className="data-count">{allUserData.length} records</span>
-              <button 
-                className="export-user-data-btn"
-                onClick={() => exportUserDataToCSV(allUserData, users.find(u => getUserId(u) === selectedUserId))}
-              >
-                <Download size={16} />
-                Export CSV
-              </button>
-              <button 
-                className="close-data-btn"
-                onClick={() => setAllUserData(null)}
-              >
-                <X size={16} />
-              </button>
-            </div>
-          </div>
-          <div className="user-data-table-container">
-            <table className="user-data-table">
-              <thead>
-                <tr>
-                  <th>Timestamp</th>
-                  <th>Device ID</th>
-                  <th>AQI</th>
-                  <th>PM2.5</th>
-                  <th>PM10</th>
-                  <th>Temperature</th>
-                  <th>Humidity</th>
-                  <th>CO2</th>
-                  <th>VOC</th>
-                  <th>Location</th>
-                </tr>
-              </thead>
-              <tbody>
-                {allUserData.slice(0, 20).map((data, index) => (
-                  <tr key={data._id || index}>
-                    <td>{new Date(data.timestamp).toLocaleString()}</td>
-                    <td>{data.deviceId}</td>
-                    <td>
-                      <span 
-                        className="aqi-value"
-                        style={{ color: getAQIColor(data.aqi) }}
-                      >
-                        {data.aqi}
-                      </span>
-                    </td>
-                    <td>{data.pm25}</td>
-                    <td>{data.pm10}</td>
-                    <td>{data.temperature}°C</td>
-                    <td>{data.humidity}%</td>
-                    <td>{data.co2}</td>
-                    <td>{data.voc}</td>
-                    <td>{data.location?.name || '-'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {allUserData.length > 20 && (
-              <div className="table-footer">
-                <p>Showing first 20 of {allUserData.length} records</p>
-              </div>
-            )}
-          </div>
-        </motion.div>
-      )}
+
 
       {/* Dashboard Header */}
       <motion.div 
