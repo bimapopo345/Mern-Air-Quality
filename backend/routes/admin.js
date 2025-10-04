@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const User = require('../models/User');
 const AirQualityData = require('../models/AirQualityData');
 const ApiLog = require('../models/ApiLog');
@@ -464,8 +465,8 @@ router.get('/data/all', async (req, res) => {
     // Get overall statistics
     const statsPipeline = [];
     
-    if (userId) {
-      statsPipeline.push({ $match: { owner: new mongoose.Types.ObjectId(userId) } });
+    if (user_id) {
+      statsPipeline.push({ $match: { owner: new mongoose.Types.ObjectId(user_id) } });
     }
     
     statsPipeline.push({
